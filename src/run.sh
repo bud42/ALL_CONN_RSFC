@@ -1,5 +1,5 @@
 echo "Prepping inputs"
-/opt/src/prep_inputs.sh
+/opt/src/prep.sh
 
 echo "Running CONN Pipeline"
 xvfb-run \
