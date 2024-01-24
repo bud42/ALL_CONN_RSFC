@@ -1,5 +1,6 @@
-CONTAINER = "/data/h_taylor/Imaging/SINGULARITY_IMAGES/all_conn_rsfc_v1.0.0.sif";
+CONTAINER = getenv("SINGULARITY_CONTAINER");
 ROOT = pwd;
+disp(CONTAINER);
 
 % Get list of subdirectories
 subjects = dir(fullfile(ROOT, '/PREPROC'));
@@ -71,7 +72,7 @@ batch.parallel.cmd_submitoptions = '-t 12:00:00 --mem=8G';
 batch.parallel.cmd_deletejob = 'ssh $USER@$HOSTNAME scancel JOBID';
 batch.parallel.cmd_checkstatus = 'ssh $USER@$HOSTNAME squeue --jobs=JOBID';
 batch.parallel.cmd_rundeployed=1;
-batch.parallel.cmd_deployedfile="singularity exec " + CONTAINER + " /opt/conn/run_conn.sh /opt/mcr/v912";
+batch.parallel.cmd_deployedfile=['singularity exec ' CONTAINER ' /opt/conn/run_conn.sh /opt/mcr/v912'];
 
 % Setup
 batch.Setup.isnew=1;
