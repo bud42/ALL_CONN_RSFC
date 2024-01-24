@@ -1,4 +1,4 @@
-ROOT = '/OUTPUTS/DATA';
+ROOT = pwd;
 
 % Get list of subdirectories
 subjects = dir(fullfile(ROOT, '/PREPROC'));
