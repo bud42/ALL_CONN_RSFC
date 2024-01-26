@@ -1,18 +1,16 @@
-if [ -d "/tmp/TEST-all_conn_rsfc" ]; then
-    echo "Already exists, delete first"
-    exit 1;
-fi
+mkdir /nobackup/h_taylor/TEST-all_conn_rsfc
+mkdir /nobackup/h_taylor/TEST-all_conn_rsfc/INPUTS
+mkdir /nobackup/h_taylor/TEST-all_conn_rsfc/OUTPUTS
+mkdir /nobackup/h_taylor/TEST-all_conn_rsfc/OUTPUTS/PREPROC
+mkdir /nobackup/h_taylor/TEST-all_conn_rsfc/OUTPUTS/ROI
 
-echo "Downloading inputs"
 
-mkdir /tmp/TEST-all_conn_rsfc
-mkdir /tmp/TEST-all_conn_rsfc/INPUTS
-mkdir /tmp/TEST-all_conn_rsfc/OUTPUTS
+for i in *;do cp /data/Newhouse/Imaging/CHAMP_NonDrug21_RSFC/PREPROC/$i/ANAT.nii $i;done
+for i in *;do cp /data/Newhouse/Imaging/CHAMP_NonDrug21_RSFC/PREPROC/$i/REST1.nii $i;done
+for i in *;do cp /data/Newhouse/Imaging/CHAMP_NonDrug21_RSFC/PREPROC/$i/REST2.nii $i;done
 
-# TODO:Download
+# Must run from OUTPUTS 
+cd /nobackup/h_taylor/TEST-all_conn_rsfc/OUTPUTS
 
 echo "Running singularity"
-singularity run \
--B /tmp/TEST-all_conn_rsfc/INPUTS:/INPUTS \
--B /tmp/TEST-all_conn_rsfc/OUTPUTS:/OUTPUTS \
-/data/h_taylor/Imaging/SINGULARITY_IMAGES/all_conn_rsfc_v1.sif
+singularity run /data/h_taylor/Imaging/SINGULARITY_IMAGES/all_conn_rsfc_v1.0.0.sif
