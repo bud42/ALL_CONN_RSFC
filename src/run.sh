@@ -1,6 +1,3 @@
-echo "Prepping inputs"
-/opt/src/prep.sh
-
 echo "Running CONN Pipeline"
 xvfb-run \
 -e /OUTPUTS/xvfb.err -f /OUTPUTS/xvfb.auth \
