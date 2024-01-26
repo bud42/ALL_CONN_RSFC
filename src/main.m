@@ -22,6 +22,7 @@ roifiles = {};
 conditions = {'rest'};
 onsets = {};
 durations = {};
+all_tr = 0;
 for n=1:numel(subjects)
     % Get current subject
     subj = subjects{n};
@@ -51,6 +52,15 @@ for n=1:numel(subjects)
 
             % Set the scan file
             fmris{n}{i} = fullfile(ROOT, 'PREPROC', subj, sess, scan);
+
+            % Determine TR
+            new_tr = spm_vol_nifti(fmris{n}{i}).private.timing.tspace
+            if all_tr == 0
+                all_tr = new_tr;
+            elseif all_tr ~= new_tr
+                disp('Bad TR found')
+                return
+            end
 
             % Set onsets to 0 and duration to infinity to include all
             onsets{1}{n}{i} = 0;
@@ -83,7 +93,6 @@ disp(onsets);
 disp(durations);
 
 % Build the variable structure
-var.TR = 0.8;  % TODO: don't hardcode this duh
 var.ROOT = ROOT;
 var.STRUCTURALS = anats;
 var.FUNCTIONALS = fmris;
@@ -93,6 +102,7 @@ var.DURATIONS = durations;
 var.ROINAMES = roinames;
 var.ROIFILES = roifiles;
 var.SOURCES = [{'atlas', 'networks'} roinames];
+var.TR = all_tr;
 
 NSUBJECTS=length(var.STRUCTURALS);
 
