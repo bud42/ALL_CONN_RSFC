@@ -1,14 +1,18 @@
 CONTAINER = getenv("SINGULARITY_CONTAINER");
-BINDS = getenv("SINGULARITY_BIND");
+BIND = getenv("SINGULARITY_BIND");
 ROOT = "";
 
-if BINDS == ""
+disp(pwd);
+disp(BIND);
+disp(CONTAINER);
+
+if BIND == ""
     disp('no binds found for INPUTS/OUTPUTS');
     return;
 end
 
 % Get the absolute path to outputs as root dir
-BINDS = split(BINDS, ',');
+binds = split(BIND, ',');
 for b=1:numel(binds)
     paths = split(binds{b}, ':');
     if string(paths{2}) == '/OUTPUTS'
@@ -20,9 +24,7 @@ if ROOT == ""
     disp('/OUTPUTS not mounted correctly.');
 end
 
-disp(pwd);
 disp(ROOT);
-disp(CONTAINER);
 
 % Get list of subdirectories
 subjects = dir(fullfile(ROOT, 'PREPROC'));
