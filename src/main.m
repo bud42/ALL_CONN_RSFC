@@ -62,7 +62,7 @@ for n=1:numel(subjects)
     i = 1;
     for k=1:numel(sessions)
          % Get current session
-        sess = sess{k};
+        sess = sessions{k};
 
         % Get list of scans for this session
         scans = dir(fullfile(ROOT, 'PREPROC', subj, 'FMRI', sess));
