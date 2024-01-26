@@ -1,6 +1,19 @@
 CONTAINER = getenv("SINGULARITY_CONTAINER");
 ROOT = pwd;
+
+if ROOT == '/OUTPUTS'
+    % Get the absolute path to outputs
+    binds = split(getenv("SINGULARITY_BIND"), ',');
+    for b=1:numel(binds)
+        paths = split(binds{b}, ':');
+        if string(paths{2}) == '/OUTPUTS'
+            ROOT = paths{1};
+        end
+    end
+end
+
 disp(pwd);
+disp(ROOT);
 disp(CONTAINER);
 
 % Get list of subdirectories
@@ -48,18 +61,18 @@ for n=1:numel(subjects)
 
         % Assign each scan by appending to list for whole subject
         for s=1:numel(scans)
-            scan = scans{s}
+            scan = scans{s};
 
             % Set the scan file
             fmris{n}{i} = fullfile(ROOT, 'PREPROC', subj, sess, scan);
 
             % Determine TR
-            new_tr = spm_vol_nifti(fmris{n}{i}).private.timing.tspace
+            new_tr = spm_vol_nifti(fmris{n}{i}).private.timing.tspace;
             if all_tr == 0
                 all_tr = new_tr;
             elseif all_tr ~= new_tr
-                disp('Bad TR found')
-                return
+                disp('Bad TR found');
+                return;
             end
 
             % Set onsets to 0 and duration to infinity to include all
@@ -85,7 +98,9 @@ for n=1:numel(subjects)
 
         filename = filename{1};
         roifiles{r}{n} = fullfile(ROOT, 'ROI', roi, subj, filename);
+    end
 end
+
 disp(anats);
 disp(fmris);
 disp(roifiles);
