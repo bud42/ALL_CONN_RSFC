@@ -1,2 +1,2 @@
-mkdir -p OUTPUTS/DATA/
-cp -r INPUTS/* OUTPUTS/DATA
+mkdir -p /OUTPUTS/DATA/
+cp -r /INPUTS/* /OUTPUTS/DATA

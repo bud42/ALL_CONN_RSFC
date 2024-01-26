@@ -1,16 +1,18 @@
 CONTAINER = getenv("SINGULARITY_CONTAINER");
-ROOT = pwd;
+ROOT = '';
 
-if ROOT == '/OUTPUTS'
-    % Get the absolute path to outputs
-    binds = split(getenv("SINGULARITY_BIND"), ',');
-    for b=1:numel(binds)
-        paths = split(binds{b}, ':');
-        if string(paths{2}) == '/OUTPUTS'
-            ROOT = paths{1};
-        end
+% Get the absolute path to outputs
+binds = split(getenv("SINGULARITY_BIND"), ',');
+for b=1:numel(binds)
+    paths = split(binds{b}, ':');
+    if string(paths{2}) == '/OUTPUTS'
+        ROOT = fullfile(paths{1}, 'DATA');
     end
 end
+
+if ROOT == '':
+    disp('/OUTPUTS not mounted correctly.')
+    return
 
 disp(pwd);
 disp(ROOT);
