@@ -65,7 +65,7 @@ for n=1:numel(subjects)
         sess = sess{k};
 
         % Get list of scans for this session
-        scans = dir(fullfile(ROOT, 'PREPROC', subj, sess, 'FMRI'));
+        scans = dir(fullfile(ROOT, 'PREPROC', subj, 'FMRI', sess));
         scans = {scans([~scans.isdir]).name};
         disp(scans);
 
@@ -74,10 +74,11 @@ for n=1:numel(subjects)
             scan = scans{s};
 
             % Set the scan file
-            fmris{n}{i} = fullfile(ROOT, 'PREPROC', subj, sess, scan);
+            fmris{n}{i} = fullfile(ROOT, 'PREPROC', subj, 'FMRI', sess, scan);
 
             % Determine TR
             new_tr = spm_vol_nifti(fmris{n}{i}).private.timing.tspace;
+            disp(new_tr);
             if all_tr == 0
                 all_tr = new_tr;
             elseif all_tr ~= new_tr
