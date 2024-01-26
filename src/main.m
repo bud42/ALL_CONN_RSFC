@@ -66,7 +66,7 @@ for n=1:numel(subjects)
 
         % Get list of scans for this session
         scans = dir(fullfile(ROOT, 'PREPROC', subj, 'FMRI', sess));
-        scans = {scans([~scans.isdir]).name};
+        scans = {scans(~[scans.isdir]).name};
         disp(scans);
 
         % Assign each scan by appending to list for whole subject
@@ -101,10 +101,12 @@ for n=1:numel(subjects)
     for r=1:numel(roinames)
         % Get current roi name
         roi = roinames{r};
+        disp(roi);
 
         % Find the path to the roi file for this subject
-        filename = dir(fullfile(ROOT, 'PREPROC', 'ROI', roi, subj));
-        filename = {filename([~filename.isdir]).name};
+        filename = dir(fullfile(ROOT, 'ROI', roi, subj));
+        disp(filename);
+        filename = {filename(~[filename.isdir]).name};
         disp(filename);
 
         filename = filename{1};
