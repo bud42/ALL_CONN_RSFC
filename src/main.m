@@ -4,42 +4,95 @@ disp(pwd);
 disp(CONTAINER);
 
 % Get list of subdirectories
-subjects = dir(fullfile(ROOT, '/PREPROC'));
+subjects = dir(fullfile(ROOT, 'PREPROC'));
 
 % Get just the directory names while excluding dot and double-dot
 subjects = {subjects([subjects.isdir] & cellfun(@(d)~all(d == '.'), {subjects.name})).name};
 disp(subjects);
 
+% Get list of rois
+roinames = dir(fullfile(ROOT, 'ROI'));
+roinames = {roinames([roinames.isdir] & cellfun(@(d)~all(d == '.'), {roinames.name})).name};
+disp(roinames);
+
 % Assign filenames/conditions for each subject
 anats = {};
 fmris = {};
-rois = {};
+roifiles = {};
 conditions = {'rest'};
 onsets = {};
 durations = {};
 for n=1:numel(subjects)
-    anats{n} = fullfile(ROOT, 'PREPROC', subjects{n}, 'ANAT.nii');
-    fmris{n}{1} = fullfile(ROOT, 'PREPROC', subjects{n}, 'REST1.nii');
-    fmris{n}{2} = fullfile(ROOT, 'PREPROC', subjects{n}, 'REST2.nii');
-    rois{1}{n} = fullfile(ROOT, 'ROI', 'DnSeg', subjects{n}, 'T1_seg_L.nii');
-    rois{2}{n} = fullfile(ROOT, 'ROI', 'DnSeg', subjects{n}, 'T1_seg_R.nii');
-    onsets{1}{n}{1} = 0;
-    onsets{1}{n}{2} = 0;
-    durations{1}{n}{1} = Inf;
-    durations{1}{n}{2} = Inf;
+    % Get current subject
+    subj = subjects{n};
+
+    % Assign the ANAT for the subject
+    anats{n} = fullfile(ROOT, 'PREPROC', subj, 'ANAT.nii');
+
+    % Get list of sessions
+    sessions = dir(fullfile(ROOT, 'PREPROC', subj, 'FMRI'));
+    sessions = {sessions([sessions.isdir] & cellfun(@(d)~all(d == '.'), {sessions.name})).name};
+    disp(sessions);
+
+    % Assign each session
+    i = 1;
+    for k=1:numel(sessions)
+         % Get current session
+        sess = sess{k};
+
+        % Get list of scans for this session
+        scans = dir(fullfile(ROOT, 'PREPROC', subj, sess, 'FMRI'));
+        scans = {scans([~scans.isdir]).name};
+        disp(scans);
+
+        % Assign each scan by appending to list for whole subject
+        for s=1:numel(scans)
+            scan = scans{s}
+
+            % Set the scan file
+            fmris{n}{i} = fullfile(ROOT, 'PREPROC', subj, sess, scan);
+
+            % Set onsets to 0 and duration to infinity to include all
+            onsets{1}{n}{i} = 0;
+            onsets{1}{n}{i} = 0;
+            durations{1}{n}{i} = Inf;
+            durations{1}{n}{i} = Inf;
+
+            % Increment total session count for subject
+            i = i + 1;
+        end
+    end
+
+    % Assign each roi
+    for r=1:numel(roinames)
+        % Get current roi name
+        roi = roinames{r};
+
+        % Find the path to the roi file for this subject
+        filename = dir(fullfile(ROOT, 'PREPROC', 'ROI', roi, subj));
+        filename = {filename([~filename.isdir]).name};
+        disp(filename);
+
+        filename = filename{1};
+        roifiles{r}{n} = fullfile(ROOT, 'ROI', roi, subj, filename);
 end
+disp(anats);
+disp(fmris);
+disp(roifiles);
+disp(onsets);
+disp(durations);
 
 % Build the variable structure
-var.TR = 0.8;
+var.TR = 0.8;  % TODO: don't hardcode this duh
 var.ROOT = ROOT;
 var.STRUCTURALS = anats;
 var.FUNCTIONALS = fmris;
 var.CONDITIONS = conditions;
 var.ONSETS = onsets;
 var.DURATIONS = durations;
-var.SOURCES = {'atlas', 'networks', 'DnSeg_Left', 'DnSeg_Right'};
-var.ROINAMES = {'DnSeg_Left', 'DnSeg_Right'};
-var.ROIFILES = rois;
+var.ROINAMES = roinames;
+var.ROIFILES = roifiles;
+var.SOURCES = [{'atlas', 'networks'} roinames];
 
 NSUBJECTS=length(var.STRUCTURALS);
 
@@ -116,10 +169,7 @@ batch.Analysis.sources=var.SOURCES;
 batch.Analysis.weight='none';
 
 % Lastly, 2nd-Level Analysis
-% TBD
-% batch.Results...
-%
-
+% TBD: batch.Results...
 % Extras: QA plots
 
 disp(batch);
