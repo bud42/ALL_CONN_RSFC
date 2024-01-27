@@ -101,24 +101,15 @@ for n=1:numel(subjects)
     for r=1:numel(roinames)
         % Get current roi name
         roi = roinames{r};
-        disp(roi);
 
         % Find the path to the roi file for this subject
         filename = dir(fullfile(ROOT, 'ROI', roi, subj));
-        disp(filename);
         filename = {filename(~[filename.isdir]).name};
-        disp(filename);
 
         filename = filename{1};
         roifiles{r}{n} = fullfile(ROOT, 'ROI', roi, subj, filename);
     end
 end
-
-disp(anats);
-disp(fmris);
-disp(roifiles);
-disp(onsets);
-disp(durations);
 
 % Build the variable structure
 var.ROOT = ROOT;
@@ -160,7 +151,7 @@ batch.filename=fullfile(var.ROOT, 'conn_project.mat');
 % Parallel on SLURM
 batch.parallel.N=NSUBJECTS;
 batch.parallel.name = 'ssh Slurm computer cluster';
-batch.parallel.cmd_submit = 'ssh $USER@$HOSTNAME sbatch --job-name=JOBLABEL --error=STDERR --output=STDOUT OPTS SCRIPT';
+batch.parallel.cmd_submit = 'ssh $USER@$HOSTNAME "sbatch --job-name=JOBLABEL --error=STDERR --output=STDOUT OPTS SCRIPT"';
 batch.parallel.cmd_submitoptions = '-t 12:00:00 --mem=8G';
 batch.parallel.cmd_deletejob = 'ssh $USER@$HOSTNAME scancel JOBID';
 batch.parallel.cmd_checkstatus = 'ssh $USER@$HOSTNAME squeue --jobs=JOBID';
@@ -210,8 +201,7 @@ batch.Analysis.weight='none';
 % TBD: batch.Results...
 % Extras: QA plots
 
-disp(batch);
-
+disp('Running batch with CONN')
 conn_batch(batch);
 
 disp('DONE!');
