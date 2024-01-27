@@ -1,5 +1,3 @@
-cp /opt/src/conn_jobmanager.mat $HOME
-
 echo "Running CONN Pipeline"
 xvfb-run \
 -e /OUTPUTS/xvfb.err -f /OUTPUTS/xvfb.auth \
