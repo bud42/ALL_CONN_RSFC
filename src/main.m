@@ -150,13 +150,16 @@ batch.filename=fullfile(var.ROOT, 'conn_project.mat');
 
 % Parallel on SLURM
 batch.parallel.N=NSUBJECTS;
-batch.parallel.name = 'ssh Slurm computer cluster';
+batch.parallel.name = 'ssh SLURM';
+batch.parallel.comments = 'SLURM commands wrapped in ssh'
 batch.parallel.cmd_submit = 'ssh $USER@$HOSTNAME "sbatch --job-name=JOBLABEL --error=STDERR --output=STDOUT OPTS SCRIPT"';
 batch.parallel.cmd_submitoptions = '-t 12:00:00 --mem=8G';
 batch.parallel.cmd_deletejob = 'ssh $USER@$HOSTNAME scancel JOBID';
 batch.parallel.cmd_checkstatus = 'ssh $USER@$HOSTNAME squeue --jobs=JOBID';
 batch.parallel.cmd_rundeployed=1;
 batch.parallel.cmd_deployedfile=['singularity exec ' CONTAINER ' /opt/conn/run_conn.sh /opt/mcr/v912'];
+batch.parallel.cmd_checkstatus_automatic = 0;
+batch.parallel.cmd_submit_delay = 1;
 
 % Setup
 batch.Setup.isnew=1;
