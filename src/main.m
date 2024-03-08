@@ -42,7 +42,7 @@ disp(roinames);
 anats = {};
 fmris = {};
 roifiles = {};
-conditions = {'rest'};
+conditions = {};
 onsets = {};
 durations = {};
 all_tr = 0;
@@ -63,6 +63,9 @@ for n=1:numel(subjects)
     for k=1:numel(sessions)
          % Get current session
         sess = sessions{k};
+
+        % Set the session-wide condition
+        conditions{i} = ['rest-' i];
 
         % Get list of scans for this session
         scans = dir(fullfile(ROOT, 'PREPROC', subj, 'FMRI', sess));
@@ -87,10 +90,8 @@ for n=1:numel(subjects)
             end
 
             % Set onsets to 0 and duration to infinity to include all
-            onsets{1}{n}{i} = 0;
-            onsets{1}{n}{i} = 0;
-            durations{1}{n}{i} = Inf;
-            durations{1}{n}{i} = Inf;
+            onsets{i}{n}{k} = 0;
+            durations{i}{n}{k} = Inf;
 
             % Increment total session count for subject
             i = i + 1;
@@ -150,16 +151,16 @@ batch.filename=fullfile(var.ROOT, 'conn_project.mat');
 
 % Parallel on SLURM
 batch.parallel.N=NSUBJECTS;
-batch.parallel.name = 'ssh SLURM';
-batch.parallel.comments = 'SLURM commands wrapped in ssh'
-batch.parallel.cmd_submit = 'ssh $USER@$HOSTNAME "sbatch --job-name=JOBLABEL --error=STDERR --output=STDOUT OPTS SCRIPT"';
-batch.parallel.cmd_submitoptions = '-t 12:00:00 --mem=8G';
-batch.parallel.cmd_deletejob = 'ssh $USER@$HOSTNAME scancel JOBID';
-batch.parallel.cmd_checkstatus = 'ssh $USER@$HOSTNAME squeue --jobs=JOBID';
+batch.parallel.name='ssh SLURM';
+batch.parallel.comments='SLURM commands wrapped in ssh'
+batch.parallel.cmd_submit='ssh $USER@$HOSTNAME "sbatch --job-name=JOBLABEL --error=STDERR --output=STDOUT OPTS SCRIPT"';
+batch.parallel.cmd_submitoptions='-t 12:00:00 --mem=8G';
+batch.parallel.cmd_deletejob='ssh $USER@$HOSTNAME scancel JOBID';
+batch.parallel.cmd_checkstatus='ssh $USER@$HOSTNAME squeue --jobs=JOBID';
 batch.parallel.cmd_rundeployed=1;
 batch.parallel.cmd_deployedfile=['singularity exec ' CONTAINER ' /opt/conn/run_conn.sh /opt/mcr/v912'];
-batch.parallel.cmd_checkstatus_automatic = 0;
-batch.parallel.cmd_submit_delay = 1;
+batch.parallel.cmd_checkstatus_automatic=0;
+batch.parallel.cmd_submit_delay=1;
 
 % Setup
 batch.Setup.isnew=1;
@@ -174,6 +175,7 @@ batch.Setup.secondarydatasets{2}=struct('functionals_type', 4, 'functionals_labe
 batch.Setup.secondarydatasets{3}=struct('functionals_type', 4, 'functionals_label', 'subject-space data');
 
 % Add our subject specific ROIs
+% TODO: alalow user to specify ROI list via file or option?
 batch.Setup.rois.add = 1;
 batch.Setup.rois.names=var.ROINAMES;
 batch.Setup.rois.files=var.ROIFILES;
@@ -185,6 +187,16 @@ batch.Setup.rois.dataset={
 batch.Setup.conditions.names=var.CONDITIONS;
 batch.Setup.conditions.onsets=var.ONSETS;
 batch.Setup.conditions.durations=var.DURATIONS;
+
+% Enable saving denoised NIFTIs with d prefix
+% Optional output files:
+%   outputfiles(1): 1/0 creates confound beta-maps
+%   outputfiles(2): 1/0 creates confound-corrected timeseries
+%   outputfiles(3): 1/0 creates seed-to-voxel r-maps
+%   outputfiles(4): 1/0 creates seed-to-voxel p-maps
+%   outputfiles(5): 1/0 creates seed-to-voxel FDR-p-maps) 
+%   outputfiles(6): 1/0 creates ROI-extraction REX files
+batch.Setup.outputfiles=[0,1,0,0,0,0];
 
 batch.Setup.preprocessing.steps=STEPS;
 batch.Setup.done=1;
@@ -204,7 +216,7 @@ batch.Analysis.weight='none';
 % TBD: batch.Results...
 % Extras: QA plots
 
-disp('Running batch with CONN')
+disp('Running batch with CONN');
 conn_batch(batch);
 
 disp('DONE!');
