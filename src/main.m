@@ -38,6 +38,13 @@ roinames = dir(fullfile(ROOT, 'ROI'));
 roinames = {roinames([roinames.isdir] & cellfun(@(d)~all(d == '.'), {roinames.name})).name};
 disp(roinames);
 
+% Get list of sources from file
+% if file exists '/OUTPUTS/DATA/sources.txt'
+% Read first line into sources
+sources = {'networks.DefaultMode', 'networks.Salience', 'networks.FrontoParietal'};
+%{'atlas', 'networks'}
+disp(sources);
+
 % Assign filenames/conditions for each subject
 anats = {};
 fmris = {};
@@ -121,7 +128,7 @@ var.ONSETS = onsets;
 var.DURATIONS = durations;
 var.ROINAMES = roinames;
 var.ROIFILES = roifiles;
-var.SOURCES = [{'atlas', 'networks'} roinames];
+var.SOURCES = [sources roinames];
 var.TR = all_tr;
 
 NSUBJECTS=length(var.STRUCTURALS);
@@ -175,7 +182,7 @@ batch.Setup.secondarydatasets{2}=struct('functionals_type', 4, 'functionals_labe
 batch.Setup.secondarydatasets{3}=struct('functionals_type', 4, 'functionals_label', 'subject-space data');
 
 % Add our subject specific ROIs
-% TODO: alalow user to specify ROI list via file or option?
+% TODO: allow user to specify ROI list via file or option?
 batch.Setup.rois.add = 1;
 batch.Setup.rois.names=var.ROINAMES;
 batch.Setup.rois.files=var.ROIFILES;
