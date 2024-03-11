@@ -49,7 +49,7 @@ disp(sources);
 anats = {};
 fmris = {};
 roifiles = {};
-conditions = {};
+conditions = {'rest'};
 onsets = {};
 durations = {};
 all_tr = 0;
@@ -65,14 +65,20 @@ for n=1:numel(subjects)
     sessions = {sessions([sessions.isdir] & cellfun(@(d)~all(d == '.'), {sessions.name})).name};
     disp(sessions);
 
+    % Counter for total runs
+    r = 1;
+
     % Assign each session
-    i = 1;
     for k=1:numel(sessions)
          % Get current session
         sess = sessions{k};
 
+        % Append to overall condition
+        nsets{1}{n}{k} = 0;
+        durations{1}{n}{k} = inf;
+
         % Set the session-wide condition
-        conditions{i} = ['rest-' i];
+        conditions{k+1} = ['rest-' sess];
 
         % Get list of scans for this session
         scans = dir(fullfile(ROOT, 'PREPROC', subj, 'FMRI', sess));
@@ -84,10 +90,10 @@ for n=1:numel(subjects)
             scan = scans{s};
 
             % Set the scan file
-            fmris{n}{i} = fullfile(ROOT, 'PREPROC', subj, 'FMRI', sess, scan);
+            fmris{n}{r} = fullfile(ROOT, 'PREPROC', subj, 'FMRI', sess, scan);
 
             % Determine TR
-            new_tr = spm_vol_nifti(fmris{n}{i}).private.timing.tspace;
+            new_tr = spm_vol_nifti(fmris{n}{r}).private.timing.tspace;
             disp(new_tr);
             if all_tr == 0
                 all_tr = new_tr;
@@ -97,18 +103,18 @@ for n=1:numel(subjects)
             end
 
             % Set onsets to 0 and duration to infinity to include all
-            onsets{i}{n}{k} = 0;
-            durations{i}{n}{k} = Inf;
+            onsets{r}{n}{k+1} = 0;
+            durations{r}{n}{k+1} = Inf;
 
-            % Increment total session count for subject
-            i = i + 1;
+            % Increment total run count for subject
+            r = r + 1;
         end
     end
 
     % Assign each roi
-    for r=1:numel(roinames)
+    for i=1:numel(roinames)
         % Get current roi name
-        roi = roinames{r};
+        roi = roinames{i};
 
         % Find the path to the roi file for this subject
         filename = dir(fullfile(ROOT, 'ROI', roi, subj));
