@@ -73,12 +73,8 @@ for n=1:numel(subjects)
          % Get current session
         sess = sessions{k};
 
-        % Append to overall condition
-        nsets{1}{n}{k} = 0;
-        durations{1}{n}{k} = inf;
-
         % Set the session-wide condition
-        conditions{k+1} = ['rest-' sess];
+        conditions{1+k} = ['rest-' sess];
 
         % Get list of scans for this session
         scans = dir(fullfile(ROOT, 'PREPROC', subj, 'FMRI', sess));
@@ -102,9 +98,16 @@ for n=1:numel(subjects)
                 return;
             end
 
-            % Set onsets to 0 and duration to infinity to include all
-            onsets{r}{n}{k+1} = 0;
-            durations{r}{n}{k+1} = Inf;
+            % Set onsets to 0 and duration to infinity to include whole scan.
+            % This scan which is indexed by total run number.
+
+            % Append to overall condition
+            nsets{1}{n}{r} = 0;
+            durations{1}{n}{r} = inf;
+
+            % Set for condition for this session
+            onsets{1+k}{n}{r} = 0;
+            durations{1+k}{n}{r} = inf;
 
             % Increment total run count for subject
             r = r + 1;
@@ -119,9 +122,10 @@ for n=1:numel(subjects)
         % Find the path to the roi file for this subject
         filename = dir(fullfile(ROOT, 'ROI', roi, subj));
         filename = {filename(~[filename.isdir]).name};
-
+        disp(filename);
         filename = filename{1};
-        roifiles{r}{n} = fullfile(ROOT, 'ROI', roi, subj, filename);
+        %TMPDIR/OUTPUTS/DATA/ROI/DnSeg_Right/2224/T1_seg_R.nii
+        roifiles{i}{n} = fullfile(ROOT, 'ROI', roi, subj, filename);
     end
 end
 
@@ -155,6 +159,7 @@ STEPS={
     'functional_label_as_smoothed'...
     };
 
+disp(var);
 
 % TODO: load covariates 2nd-Level subject effects
 % Setup.subjects.effects, Setup.subjects.groups
@@ -228,6 +233,8 @@ batch.Analysis.weight='none';
 % Lastly, 2nd-Level Analysis
 % TBD: batch.Results...
 % Extras: QA plots
+
+disp(batch);
 
 disp('Running batch with CONN');
 conn_batch(batch);
