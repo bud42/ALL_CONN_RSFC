@@ -1,0 +1,50 @@
+To build this image, run run docker_build and docker_push on braeburn. It needs
+an older mac with intel chip in order to run on ACCRE.
+
+1.edit and push to github
+2.on braeburn, git pull, docker_build, docker_push
+3.on sideshow, singularity pull, singularity run
+
+
+
+TMPDIR=TMPDIR
+singularity exec -e --env USER=$USER --env HOSTNAME=$HOSTNAME \
+--home $JOBDIR:$HOME -B $HOME/.ssh:$HOME/.ssh \
+-B $JOBDIR/INPUTS:/INPUTS -B $JOBDIR/OUTPUTS:/OUTPUTS \
+-B $JOBDIR:/tmp \
+-B $JOBDIR:/dev/shm \
+/data/h_taylor/Imaging/SINGULARITY_IMAGES/bash_latest.sif \
+bash -c 'cd /INPUTS && for i in *;do mkdir -p /OUTPUTS/DATA/PREPROC/$i/FMRI/Baseline; mkdir -p /OUTPUTS/DATA/PREPROC/$i/FMRI/PostTx; mkdir -p /OUTPUTS/DATA/ROI/DnSeg_Left/$i; mkdir -p /OUTPUTS/DATA/ROI/DnSeg_Right/$i; cp $i/*/*/DATA/T1_resliced.nii /OUTPUTS/DATA/PREPROC/$i/ANAT.nii; cp $i/Baseline-REST.nii.gz /OUTPUTS/DATA/PREPROC/$i/FMRI/Baseline/REST.nii.gz; cp $i/PostTx-REST.nii.gz /OUTPUTS/DATA/PREPROC/$i/FMRI/PostTx/REST.nii.gz; cp $i/*/*/DATA/T1_seg_L.nii /OUTPUTS/DATA/ROI/DnSeg_Left/$i/T1_seg_L.nii; cp $i/*/*/DATA/T1_seg_R.nii /OUTPUTS/DATA/ROI/DnSeg_Right/$i/T1_seg_R.nii; gunzip /OUTPUTS/DATA/PREPROC/*/FMRI/*/*.nii.gz; done;'
+
+
+TMPDIR=TMPDIR
+singularity run -e --env USER=$USER --env HOSTNAME=$HOSTNAME \
+--home $TMPDIR:$HOME \
+-B $HOME/.ssh:$HOME/.ssh \
+-B $TMPDIR/INPUTS:/INPUTS \
+-B $TMPDIR/OUTPUTS:/OUTPUTS \
+-B $TMPDIR:/tmp \
+-B $TMPDIR:/dev/shm \
+-B $HOME/conn_jobmanager.mat:$HOME/conn_jobmanager.mat \
+/data/h_taylor/Imaging/SINGULARITY_IMAGES/all_conn_rsfc_v1.0.0.sif 
+
+
+
+To run a local main.m in TMPDIR that you have edited:
+
+TMPDIR=TMPDIR
+singularity exec -e --env USER=$USER --env HOSTNAME=$HOSTNAME \
+--home $TMPDIR:$HOME \
+-B $HOME/.ssh:$HOME/.ssh \
+-B $TMPDIR/INPUTS:/INPUTS \
+-B $TMPDIR/OUTPUTS:/OUTPUTS \
+-B $TMPDIR:/tmp \
+-B $TMPDIR:/dev/shm \
+-B $HOME/conn_jobmanager.mat:$HOME/conn_jobmanager.mat \
+/data/h_taylor/Imaging/SINGULARITY_IMAGES/all_conn_rsfc_v1.0.0.sif \
+/opt/conn/run_conn.sh /opt/mcr/v912 batch /tmp/main.m
+
+
+
+This is the shortest path for a debugging loop when you want to edit the main
+matlab script that is run by the compiled matlab code.
