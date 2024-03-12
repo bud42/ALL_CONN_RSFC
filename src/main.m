@@ -102,7 +102,7 @@ for n=1:numel(subjects)
             % This scan which is indexed by total run number.
 
             % Append to overall condition
-            nsets{1}{n}{r} = 0;
+            onsets{1}{n}{r} = 0;
             durations{1}{n}{r} = inf;
 
             % Set for condition for this session
