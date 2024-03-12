@@ -98,6 +98,12 @@ for n=1:numel(subjects)
                 return;
             end
 
+            % Initialize all conditions for this run
+            for c=1:1+numel(sessions)
+                onsets{c}{n}{r} = [];
+                durations{c}{n}{r} = [];
+            end
+
             % Set onsets to 0 and duration to infinity to include whole scan.
             % This scan which is indexed by total run number.
 
