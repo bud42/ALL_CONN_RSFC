@@ -218,7 +218,7 @@ batch.Setup.conditions.durations=var.DURATIONS;
 %   outputfiles(4): 1/0 creates seed-to-voxel p-maps
 %   outputfiles(5): 1/0 creates seed-to-voxel FDR-p-maps) 
 %   outputfiles(6): 1/0 creates ROI-extraction REX files
-%batch.Setup.outputfiles=[0,1,0,0,0,0];
+batch.Setup.outputfiles=[0,1,0,0,0,0];
 
 batch.Setup.preprocessing.steps=STEPS;
 batch.Setup.done=1;
