@@ -38,11 +38,13 @@ roinames = dir(fullfile(ROOT, 'ROI'));
 roinames = {roinames([roinames.isdir] & cellfun(@(d)~all(d == '.'), {roinames.name})).name};
 disp(roinames);
 
-% Get list of sources from file
-% if file exists '/OUTPUTS/DATA/sources.txt'
-% Read first line into sources
-sources = {'networks.DefaultMode', 'networks.Salience', 'networks.FrontoParietal'};
-%{'atlas', 'networks'}
+% Get list of sources in addition to ROIs
+if isfile(fullfile(ROOT, 'sources.txt'))
+    % Read first line into sources
+    sources = readcell(fullfile(ROOT, 'sources.txt'));
+else
+    sources = {};
+end
 disp(sources);
 
 % Assign filenames/conditions for each subject
