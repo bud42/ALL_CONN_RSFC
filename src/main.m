@@ -65,7 +65,6 @@ for n=1:numel(subjects)
     % Get list of sessions
     sessions = dir(fullfile(ROOT, 'PREPROC', subj, 'FMRI'));
     sessions = {sessions([sessions.isdir] & cellfun(@(d)~all(d == '.'), {sessions.name})).name};
-    disp(sessions);
 
     % Counter for total runs
     r = 1;
@@ -81,7 +80,6 @@ for n=1:numel(subjects)
         % Get list of scans for this session
         scans = dir(fullfile(ROOT, 'PREPROC', subj, 'FMRI', sess));
         scans = {scans(~[scans.isdir]).name};
-        disp(scans);
 
         % Assign each scan by appending to list for whole subject
         for s=1:numel(scans)
@@ -107,7 +105,7 @@ for n=1:numel(subjects)
             end
 
             % Set onsets to 0 and duration to infinity to include whole scan.
-            % This scan is indexed by total run number.
+            % Current scan indexed by total run number.
 
             % Append to overall condition
             onsets{1}{n}{r} = 0;
@@ -130,9 +128,7 @@ for n=1:numel(subjects)
         % Find the path to the roi file for this subject
         filename = dir(fullfile(ROOT, 'ROI', roi, subj));
         filename = {filename(~[filename.isdir]).name};
-        disp(filename);
         filename = filename{1};
-        %TMPDIR/OUTPUTS/DATA/ROI/DnSeg_Right/2224/T1_seg_R.nii
         roifiles{i}{n} = fullfile(ROOT, 'ROI', roi, subj, filename);
     end
 end
@@ -199,7 +195,6 @@ batch.Setup.secondarydatasets{2}=struct('functionals_type', 4, 'functionals_labe
 batch.Setup.secondarydatasets{3}=struct('functionals_type', 4, 'functionals_label', 'subject-space data');
 
 % Add our subject specific ROIs
-% TODO: allow user to specify ROI list via file or option?
 batch.Setup.rois.add = 1;
 batch.Setup.rois.names=var.ROINAMES;
 batch.Setup.rois.files=var.ROIFILES;
