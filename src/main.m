@@ -105,7 +105,7 @@ for n=1:numel(subjects)
             end
 
             % Set onsets to 0 and duration to infinity to include whole scan.
-            % This scan which is indexed by total run number.
+            % This scan is indexed by total run number.
 
             % Append to overall condition
             onsets{1}{n}{r} = 0;
@@ -165,8 +165,6 @@ STEPS={
     'functional_label_as_smoothed'...
     };
 
-disp(var);
-
 % TODO: load covariates 2nd-Level subject effects
 % Setup.subjects.effects, Setup.subjects.groups
 
@@ -220,7 +218,7 @@ batch.Setup.conditions.durations=var.DURATIONS;
 %   outputfiles(4): 1/0 creates seed-to-voxel p-maps
 %   outputfiles(5): 1/0 creates seed-to-voxel FDR-p-maps) 
 %   outputfiles(6): 1/0 creates ROI-extraction REX files
-batch.Setup.outputfiles=[0,1,0,0,0,0];
+%batch.Setup.outputfiles=[0,1,0,0,0,0];
 
 batch.Setup.preprocessing.steps=STEPS;
 batch.Setup.done=1;
@@ -239,8 +237,6 @@ batch.Analysis.weight='none';
 % Lastly, 2nd-Level Analysis
 % TBD: batch.Results...
 % Extras: QA plots
-
-disp(batch);
 
 disp('Running batch with CONN');
 conn_batch(batch);
