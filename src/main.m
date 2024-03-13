@@ -171,7 +171,7 @@ batch.filename=fullfile(var.ROOT, 'conn_project.mat');
 % Parallel on SLURM
 batch.parallel.N=NSUBJECTS;
 batch.parallel.name='ssh SLURM';
-batch.parallel.comments='SLURM commands wrapped in ssh'
+batch.parallel.comments='SLURM commands wrapped in ssh';
 batch.parallel.cmd_submit='ssh $USER@$HOSTNAME "sbatch --job-name=JOBLABEL --error=STDERR --output=STDOUT OPTS SCRIPT"';
 batch.parallel.cmd_submitoptions='-t 12:00:00 --mem=8G';
 batch.parallel.cmd_deletejob='ssh $USER@$HOSTNAME scancel JOBID';
