@@ -41,7 +41,7 @@ disp(roinames);
 % Get list of sources in addition to ROIs
 if isfile(fullfile(ROOT, 'sources.txt'))
     % Read first line into sources
-    sources = readcell(fullfile(ROOT, 'sources.txt'));
+    sources = readcell(fullfile(ROOT, 'sources.txt'), Delimiter=' ');
 else
     sources = {};
 end
@@ -90,7 +90,6 @@ for n=1:numel(subjects)
 
             % Determine TR
             new_tr = spm_vol_nifti(fmris{n}{r}).private.timing.tspace;
-            disp(new_tr);
             if all_tr == 0
                 all_tr = new_tr;
             elseif all_tr ~= new_tr
