@@ -8,10 +8,11 @@ disp(CONTAINER);
 
 if BIND == ""
     disp('no binds found for INPUTS/OUTPUTS');
-    return;
+    exit;
 end
 
 % Get the absolute path to outputs as root dir
+% We use the abs path so the launched jobs can find the data.
 binds = split(BIND, ',');
 for b=1:numel(binds)
     paths = split(binds{b}, ':');
@@ -22,6 +23,7 @@ end
 
 if ROOT == ""
     disp('/OUTPUTS not mounted correctly.');
+    exit;
 end
 
 disp(ROOT);
@@ -54,7 +56,7 @@ roifiles = {};
 conditions = {'rest'};
 onsets = {};
 durations = {};
-all_tr = 0;
+all_tr = 0.0;
 for n=1:numel(subjects)
     % Get current subject
     subj = subjects{n};
@@ -94,7 +96,7 @@ for n=1:numel(subjects)
                 all_tr = new_tr;
             elseif all_tr ~= new_tr
                 disp('Bad TR found');
-                return;
+                exit;
             end
 
             % Initialize all conditions for this run
