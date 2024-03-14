@@ -48,3 +48,9 @@ singularity exec -e --env USER=$USER --env HOSTNAME=$HOSTNAME \
 
 This is the shortest path for a debugging loop when you want to edit the main
 matlab script that is run by the compiled matlab code.
+
+We have to run this container in an enviroment where the jobs that get launched can access the same mcr and same
+INPUTS/OUTPUTS folders. So, it can't use /tmp and will need access to /home/$USER. Alternatively, could map a home in the jobdir.
+
+singularity run -e --env USER=$USER --env HOSTNAME=$HOSTNAME -B $HOME/.ssh:$HOME/.ssh -B ./INPUTS:/INPUTS -B ./OUTPUTS:/OUTPUTS -B $HOME/conn_jobmanager.mat:$HOME/conn_jobmanager.mat /data/h_taylor/Imaging/SINGULARITY_IMAGES/all_conn_rsfc_v1.0.0.sif 
+
