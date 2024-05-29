@@ -1,0 +1,63 @@
+---
+containers:
+  - name: CONN
+    path: /data/h_taylor/Imaging/SINGULARITY_IMAGES/all_conn_rsfc_v1.0.0.sif
+    source: docker://bud42/all_conn_rsfc:v1.0.0
+  - name: BASH
+    path: /data/h_taylor/Imaging/SINGULARITY_IMAGES/bash_latest.sif
+requirements:
+  walltime: 0-12
+  memory: 16G
+inputs:
+  xnat:
+    subjects:
+      sessions:
+        - types: Baseline
+          scans:
+          - types: T1
+            nifti: Baseline-ANAT.nii.gz
+          - types: fMRI_REST1
+            nifti: Baseline-REST1.nii.gz
+          - types: fMRI_REST2
+            nifti: Baseline-REST2.nii.gz
+          - types: fMRI_REST3
+            nifti: Baseline-REST3.nii.gz
+          assessors:
+            - types: DnSeg_v1
+              resources:
+              - resource: DATA
+        - types: Week5
+          scans:
+          - types: fMRI_REST1
+            nifti: Week5-REST1.nii.gz
+          - types: fMRI_REST2
+            nifti: Week5-REST2.nii.gz
+          - types: fMRI_REST3
+            nifti: Week5-REST3.nii.gz
+pre:
+  type: singularity_exec
+  container: BASH
+  args: >-
+    bash -c 'cd /INPUTS &&
+    for i in *;do
+    mkdir -p /OUTPUTS/DATA/PREPROC/$i/FMRI/Baseline;
+    mkdir -p /OUTPUTS/DATA/PREPROC/$i/FMRI/Week5;
+    mkdir -p /OUTPUTS/DATA/ROI/DnSeg_Left/$i;
+    mkdir -p /OUTPUTS/DATA/ROI/DnSeg_Right/$i;
+    cp $i/Baseline-ANAT.nii.gz /OUTPUTS/DATA/PREPROC/$i/ANAT.nii.gz;
+    cp $i/Baseline-REST1.nii.gz /OUTPUTS/DATA/PREPROC/$i/FMRI/Baseline/REST1.nii.gz;
+    cp $i/Baseline-REST2.nii.gz /OUTPUTS/DATA/PREPROC/$i/FMRI/Baseline/REST2.nii.gz;
+    cp $i/Baseline-REST3.nii.gz /OUTPUTS/DATA/PREPROC/$i/FMRI/Baseline/REST3.nii.gz;
+    cp $i/Week5-REST1.nii.gz /OUTPUTS/DATA/PREPROC/$i/FMRI/Week5/REST1.nii.gz;
+    cp $i/Week5-REST2.nii.gz /OUTPUTS/DATA/PREPROC/$i/FMRI/Week5/REST2.nii.gz;
+    cp $i/Week5-REST3.nii.gz /OUTPUTS/DATA/PREPROC/$i/FMRI/Week5/REST3.nii.gz;
+    cp $i/*/*/DATA/T1_seg_L.nii /OUTPUTS/DATA/ROI/DnSeg_Left/$i/T1_seg_L.nii;
+    cp $i/*/*/DATA/T1_seg_R.nii /OUTPUTS/DATA/ROI/DnSeg_Right/$i/T1_seg_R.nii;
+    gunzip /OUTPUTS/DATA/PREPROC/*/FMRI/*/*.nii.gz;
+    gunzip /OUTPUTS/DATA/PREPROC/*/*.nii.gz;
+    done;'
+command:
+  type: singularity_run
+  container: CONN
+  extraopts: -B $HOME/conn_jobmanager.mat:$HOME/conn_jobmanager.mat
+description: Project-level RSFC with CONN toolbox.
