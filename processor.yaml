@@ -24,7 +24,7 @@ inputs:
 pre:
   type: singularity_exec
   container: BASH
-  args: /REPO/src/pre.sh
+  args: bash /REPO/src/pre.sh
 command:
   type: singularity_exec
   container: CONN
