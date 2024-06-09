@@ -1,0 +1,42 @@
+---
+containers:
+  - name: CONN
+    path: all_conn_rsfc_v1.0.0.sif
+    source: docker://bud42/all_conn_rsfc:v1.0.0
+requirements:
+  walltime: 0-12
+  memory: 16G
+jobdir: shared
+inputs:
+  xnat:
+    subjects:
+      sessions:
+        - types: Baseline
+          scans:
+          - types: T1
+            nifti: Baseline-ANAT.nii.gz
+          - types: fMRI_REST1
+            nifti: Baseline-REST1.nii.gz
+          - types: fMRI_REST2
+            nifti: Baseline-REST2.nii.gz
+          - types: fMRI_REST3
+            nifti: Baseline-REST3.nii.gz
+        - types: Week5
+          scans:
+          - types: T1
+            nifti: Week5-ANAT.nii.gz
+          - types: fMRI_REST1
+            nifti: Week5-REST1.nii.gz
+          - types: fMRI_REST2
+            nifti: Week5-REST2.nii.gz
+          - types: fMRI_REST3
+            nifti: week5-REST3.nii.gz
+pre:
+  type: singularity_exec
+  container: CONN
+  args: /bin/bash /REPO/src/COGD/pre.sh
+command:
+  type: singularity_exec
+  container: CONN
+  args: /bin/bash /REPO/src/main.sh
+description: Project-level RSFC with CONN toolbox.
