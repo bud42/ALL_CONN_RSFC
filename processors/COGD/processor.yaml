@@ -20,7 +20,6 @@ inputs:
           - types: fMRI_REST2
             nifti: Baseline-REST2.nii.gz
           - types: fMRI_REST3
-            nifti: Baseline-REST3.nii.gz
         - types: Week5
           scans:
           - types: T1
@@ -30,7 +29,6 @@ inputs:
           - types: fMRI_REST2
             nifti: Week5-REST2.nii.gz
           - types: fMRI_REST3
-            nifti: week5-REST3.nii.gz
 pre:
   type: singularity_exec
   container: CONN
