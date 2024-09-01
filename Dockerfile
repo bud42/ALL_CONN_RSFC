@@ -14,8 +14,8 @@ RUN apt-get update -qq && DEBIAN_FRONTEND=noninteractive \
 # Install MATLAB MCR
 ENV MCR_INHIBIT_CTF_LOCK 1
 RUN mkdir /opt/mcr_install /opt/mcr
-COPY MATLAB_Runtime_R2022a_Update_7_glnxa64.zip /opt/mcr_install
-RUN unzip -q /opt/mcr_install/MATLAB_Runtime_R2022a_Update_7_glnxa64.zip \
+COPY MATLAB_Runtime_R2022a_Update_8_glnxa64.zip /opt/mcr_install
+RUN unzip -q /opt/mcr_install/MATLAB_Runtime_R2022a_Update_8_glnxa64.zip \
     -d /opt/mcr_install && \
     /opt/mcr_install/install \
     -destinationFolder /opt/mcr \
