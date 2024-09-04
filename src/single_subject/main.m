@@ -1,6 +1,6 @@
 CONTAINER = getenv("SINGULARITY_CONTAINER");
 BIND = getenv("SINGULARITY_BIND");
-ROOT = '/OUTPUTS/DATA';
+ROOT = '/OUTPUTS';
 
 disp(pwd);
 disp(BIND);
@@ -167,12 +167,18 @@ batch.Setup.secondarydatasets{3}=struct('functionals_type', 4, 'functionals_labe
 
 % Add our subject specific ROIs
 batch.Setup.rois.add = 1;
-batch.Setup.rois.names=var.ROINAMES;
-batch.Setup.rois.files=var.ROIFILES;
-batch.Setup.rois.dataset={
-    'subject-space data'
-    'subject-space data'
-};
+%batch.Setup.rois.names=var.ROINAMES;
+%atch.Setup.rois.files=var.ROIFILES;
+%batch.Setup.rois.dataset={
+%    'subject-space data'
+%    'subject-space data'
+%};
+
+% Add atlas ROIs
+batch.Setup.rois.multiplelabels={1, 1}
+batch.Setup.rois.names={'Schaefer100','Schaefer200'}
+batch.Setup.rois.files{1}=['/OUTPUTS/PREPROC/Schaefer100.nii']
+batch.Setup.rois.files{2}=['/OUTPUTS/PREPROC/Schaefer200.nii']
 
 batch.Setup.conditions.names=var.CONDITIONS;
 batch.Setup.conditions.onsets=var.ONSETS;

@@ -32,6 +32,7 @@ RUN unzip -qj /opt/conn22a_glnxa64.zip -d /opt/conn && \
 RUN /opt/conn/run_conn.sh /opt/mcr/v912 batch exit
 
 # Install our code
+COPY ROI /opt/ROI/
 COPY src /opt/src/
 RUN chmod a+x /opt/src/*.sh
 
