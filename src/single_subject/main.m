@@ -1,6 +1,6 @@
 CONTAINER = getenv("SINGULARITY_CONTAINER");
 BIND = getenv("SINGULARITY_BIND");
-ROOT = "/OUTPUTS/DATA";
+ROOT = '/OUTPUTS/DATA';
 
 disp(pwd);
 disp(BIND);
@@ -42,8 +42,8 @@ durations = {};
 all_tr = 0.0;
 
 % Get current subject
-subj = subjects{1};
 n = 1;
+subj = subjects{n};
 
 % Assign the ANAT for the subject
 anats{n} = fullfile(ROOT, 'PREPROC', subj, 'ANAT.nii');
