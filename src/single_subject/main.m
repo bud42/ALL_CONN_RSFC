@@ -23,6 +23,15 @@ roinames = dir(fullfile(ROOT, 'ROI'));
 roinames = {roinames([roinames.isdir] & cellfun(@(d)~all(d == '.'), {roinames.name})).name};
 disp(roinames);
 
+% Get list of atlas names to load for potential sources
+if isfile(fullfile(ROOT, 'atlases.txt'))
+    % Read first line
+    atlasnames = readcell(fullfile(ROOT, 'atlases.txt'), Delimiter=' ');
+else
+    atlasnames = {};
+end
+disp(atlasnames);
+
 % Get list of source regions (in additioon to ROI list)
 if isfile(fullfile(ROOT, 'sources.txt'))
     % Read first line into sources
@@ -31,6 +40,7 @@ else
     sources = {};
 end
 disp(sources);
+
 
 % Assign filenames/conditions
 anats = {};
@@ -105,17 +115,28 @@ for k=1:numel(sessions)
     end
 end
 
-% Assign each roi
-for i=1:numel(roinames)
-    % Get current roi name
-    roi = roinames{i};
+%% Assign each roi
+%for i=1:numel(roinames)
+%    % Get current roi name
+%    roi = roinames{i};
+%
+%    % Find the path to the roi file for this subject
+%    filename = dir(fullfile(ROOT, 'ROI', roi, subj));
+%    filename = {filename(~[filename.isdir]).name};
+%    filename = filename{1};
+%    roifiles{i}{n} = fullfile(ROOT, 'ROI', roi, subj, filename);
+%end
 
-    % Find the path to the roi file for this subject
-    filename = dir(fullfile(ROOT, 'ROI', roi, subj));
-    filename = {filename(~[filename.isdir]).name};
-    filename = filename{1};
-    roifiles{i}{n} = fullfile(ROOT, 'ROI', roi, subj, filename);
+% Assign each atlas
+for i=1:numel(atlasnames)
+    % Get current
+    atlas = atlasnames{i};
+
+    % Find the path to the file
+    filename =fullfile(ROOT, 'PREPROC', [atlas '.nii']);
+    atlasfiles{i}{n} = fullfile(ROOT, 'PREPROC', filename);
 end
+disp(atlasfiles);
 
 % Build the variable structure
 var.ROOT = ROOT;
@@ -124,9 +145,12 @@ var.FUNCTIONALS = fmris;
 var.CONDITIONS = conditions;
 var.ONSETS = onsets;
 var.DURATIONS = durations;
-var.ROINAMES = roinames;
-var.ROIFILES = roifiles;
-var.SOURCES = [sources roinames];
+%var.ROINAMES = roinames;
+%var.ROIFILES = roifiles;
+%var.SOURCES = [sources roinames];
+var.ROINAMES = atlasnames;
+var.ROIFILES = atlasfiles;
+var.SOURCES = [sources atlasnames];
 var.TR = all_tr;
 
 NSUBJECTS=length(var.STRUCTURALS);
@@ -167,19 +191,20 @@ batch.Setup.secondarydatasets{3}=struct('functionals_type', 4, 'functionals_labe
 
 % Add our subject specific ROIs
 batch.Setup.rois.add = 1;
-%batch.Setup.rois.names=var.ROINAMES;
-%atch.Setup.rois.files=var.ROIFILES;
+batch.Setup.rois.names=var.ROINAMES;
+batch.Setup.rois.files=var.ROIFILES;
 %batch.Setup.rois.dataset={
 %    'subject-space data'
 %    'subject-space data'
 %};
 
 % Add atlas ROIs
-batch.Setup.rois.multiplelabels={1, 1}
-batch.Setup.rois.names={'Schaefer100','Schaefer200'}
-batch.Setup.rois.files{1}=['/OUTPUTS/PREPROC/Schaefer100.nii']
-batch.Setup.rois.files{2}=['/OUTPUTS/PREPROC/Schaefer200.nii']
+%batch.Setup.rois.multiplelabels={1, 1}
+%batch.Setup.rois.names={'Schaefer100','Schaefer200'}
+%batch.Setup.rois.files{1}=['/OUTPUTS/PREPROC/Schaefer100.nii']
+%batch.Setup.rois.files{2}=['/OUTPUTS/PREPROC/Schaefer200.nii']
 
+% Configure conditions
 batch.Setup.conditions.names=var.CONDITIONS;
 batch.Setup.conditions.onsets=var.ONSETS;
 batch.Setup.conditions.durations=var.DURATIONS;
