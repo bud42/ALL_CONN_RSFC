@@ -129,14 +129,10 @@ for i=1:numel(roinames)
     roidatasets{i} = 'subject-space data';
 end
 
-% Assign each atlas
+% Assign each atlas file
 for i=1:numel(atlasnames)
-    % Get current
     atlas = atlasnames{i};
-
-    % Find the path to the file
-    filename =fullfile(ROOT, 'PREPROC', [atlas '.nii']);
-    atlasfiles{i}{n} = fullfile(ROOT, 'PREPROC', filename);
+    atlasfiles{i}{n} = fullfile(ROOT, 'PREPROC', [atlas '.nii']););
 end
 disp(atlasfiles);
 
