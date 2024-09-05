@@ -46,6 +46,7 @@ disp(sources);
 anats = {};
 fmris = {};
 roifiles = {};
+roidatasets = {};
 conditions = {'rest'};
 onsets = {};
 durations = {};
@@ -115,17 +116,18 @@ for k=1:numel(sessions)
     end
 end
 
-%% Assign each roi
-%for i=1:numel(roinames)
-%    % Get current roi name
-%    roi = roinames{i};
-%
-%    % Find the path to the roi file for this subject
-%    filename = dir(fullfile(ROOT, 'ROI', roi, subj));
-%    filename = {filename(~[filename.isdir]).name};
-%    filename = filename{1};
-%    roifiles{i}{n} = fullfile(ROOT, 'ROI', roi, subj, filename);
-%end
+% Assign each roi
+for i=1:numel(roinames)
+    % Get current roi name
+    roi = roinames{i};
+
+    % Find the path to the roi file for this subject
+    filename = dir(fullfile(ROOT, 'ROI', roi, subj));
+    filename = {filename(~[filename.isdir]).name};
+    filename = filename{1};
+    roifiles{i}{n} = fullfile(ROOT, 'ROI', roi, subj, filename);
+    roidatasets{i} = 'subject-space data';
+end
 
 % Assign each atlas
 for i=1:numel(atlasnames)
@@ -145,13 +147,12 @@ var.FUNCTIONALS = fmris;
 var.CONDITIONS = conditions;
 var.ONSETS = onsets;
 var.DURATIONS = durations;
-%var.ROINAMES = roinames;
-%var.ROIFILES = roifiles;
-%var.SOURCES = [sources roinames];
-var.ROINAMES = atlasnames;
-var.ROIFILES = atlasfiles;
-var.SOURCES = [sources atlasnames];
+var.ROINAMES = [roinames atlasnames];
+var.ROIFILES = [roifiles atlasfiles];
+var.SOURCES = [roinames sources];
+var.ROIDATASETS = roidatasets;
 var.TR = all_tr;
+disp(var);
 
 NSUBJECTS=length(var.STRUCTURALS);
 
@@ -189,20 +190,11 @@ batch.Setup.secondarydatasets{1}=struct('functionals_type', 2, 'functionals_labe
 batch.Setup.secondarydatasets{2}=struct('functionals_type', 4, 'functionals_label', 'original data');
 batch.Setup.secondarydatasets{3}=struct('functionals_type', 4, 'functionals_label', 'subject-space data');
 
-% Add our subject specific ROIs
+% Add  ROIs
 batch.Setup.rois.add = 1;
 batch.Setup.rois.names=var.ROINAMES;
 batch.Setup.rois.files=var.ROIFILES;
-%batch.Setup.rois.dataset={
-%    'subject-space data'
-%    'subject-space data'
-%};
-
-% Add atlas ROIs
-%batch.Setup.rois.multiplelabels={1, 1}
-%batch.Setup.rois.names={'Schaefer100','Schaefer200'}
-%batch.Setup.rois.files{1}=['/OUTPUTS/PREPROC/Schaefer100.nii']
-%batch.Setup.rois.files{2}=['/OUTPUTS/PREPROC/Schaefer200.nii']
+batch.Setup.rois.dataset=var.ROIDATASETS;
 
 % Configure conditions
 batch.Setup.conditions.names=var.CONDITIONS;
