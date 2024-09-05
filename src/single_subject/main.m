@@ -132,7 +132,7 @@ end
 % Assign each atlas file
 for i=1:numel(atlasnames)
     atlas = atlasnames{i};
-    atlasfiles{i}{n} = fullfile(ROOT, 'PREPROC', [atlas '.nii']););
+    atlasfiles{i}{n} = fullfile(ROOT, 'PREPROC', [atlas '.nii']);
 end
 disp(atlasfiles);
 
