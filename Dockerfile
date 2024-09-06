@@ -4,7 +4,7 @@ FROM python:3.8-slim-buster
 RUN apt-get update -qq && DEBIAN_FRONTEND=noninteractive \
     apt-get install -yq --no-install-recommends \
     openssh-client \
-    apt-utils ca-certificates unzip xorg wget xvfb \
+    apt-utils ca-certificates zip unzip xorg wget xvfb \
     bc libgomp1 libxmu6 libxt6 libstdc++6 tar \
     ghostscript libgs-dev \
     && apt-get clean \
