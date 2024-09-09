@@ -104,7 +104,7 @@ for k=1:numel(sessions)
         jsondata = jsondecode(fileread(jsonfile));
         new_times = jsondata.SliceTiming;
         disp(new_times);
-        if all_times == []
+        if is_empty(all_times)
             all_times = new_times;
         elseif all_times ~= new_times
             disp('Conflicting slice times');
