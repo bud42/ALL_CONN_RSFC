@@ -32,7 +32,7 @@ else
 end
 disp(atlasnames);
 
-% Get list of source regions (in additioon to ROI list)
+% Get list of source regions (in addition to ROI list)
 if isfile(fullfile(ROOT, 'sources.txt'))
     % Read first line into sources
     sources = readcell(fullfile(ROOT, 'sources.txt'), Delimiter=' ');
@@ -47,10 +47,11 @@ anats = {};
 fmris = {};
 roifiles = {};
 roidatasets = {};
-conditions = {'rest'};
+conditions = {};
 onsets = {};
 durations = {};
 all_tr = 0.0;
+all_times = [];
 
 % Get current subject
 n = 1;
@@ -68,48 +69,59 @@ r = 1;
 
 % Assign each session
 for k=1:numel(sessions)
-     % Get current session
+    % Get current session
     sess = sessions{k};
 
-    % Set the session-wide condition
-    conditions{1+k} = ['rest-' sess];
+    disp(sess);
+
+    % Set name for the session-wide condition, all runs
+    conditions{k} = ['rest-' sess];
 
     % Get list of scans for this session
-    scans = dir(fullfile(ROOT, 'PREPROC', subj, 'FMRI', sess));
+    scans = dir(fullfile(ROOT, 'PREPROC', subj, 'FMRI', sess, '*.nii'));
     scans = {scans(~[scans.isdir]).name};
 
     % Assign each scan by appending to list for whole subject
     for s=1:numel(scans)
         scan = scans{s};
+        disp(scan);
 
         % Set the scan file
         fmris{n}{r} = fullfile(ROOT, 'PREPROC', subj, 'FMRI', sess, scan);
 
         % Determine TR
         new_tr = spm_vol_nifti(fmris{n}{r}).private.timing.tspace;
-        if all_tr == 0
+        if all_tr == 0.0
             all_tr = new_tr;
         elseif all_tr ~= new_tr
-            disp('Bad TR found');
+            disp('Conflicting TR found');
+            exit;
+        end
+
+        % Load slicetimes
+        [nifti_dir, nifti_base, nifti_ext] = fileparts(fmris{n}{r});
+        jsonfile = fullfile(nifti_dir, [nifti_base '.json']);
+        jsondata = jsondecode(fileread(jsonfile));
+        new_times = jsondata.SliceTiming;
+        disp(new_times);
+        if isempty(all_times)
+            all_times = new_times;
+        elseif all_times ~= new_times
+            disp('Conflicting slice times');
             exit;
         end
 
         % Initialize all conditions for this run
-        for c=1:1+numel(sessions)
+        for c=1:numel(sessions)
             onsets{c}{n}{r} = [];
             durations{c}{n}{r} = [];
         end
 
         % Set onsets to 0 and duration to infinity to include whole scan.
-        % Current scan indexed by total run number.
-
-        % Append to overall condition
-        onsets{1}{n}{r} = 0;
-        durations{1}{n}{r} = inf;
-
-        % Set for condition for this session
-        onsets{1+k}{n}{r} = 0;
-        durations{1+k}{n}{r} = inf;
+        % Current scan indexed by total run number, r.
+        % Set for condition for this session, k.
+        onsets{k}{n}{r} = 0;
+        durations{k}{n}{r} = inf;
 
         % Increment total run count for subject
         r = r + 1;
@@ -148,15 +160,18 @@ var.ROIFILES = [roifiles atlasfiles];
 var.SOURCES = [roinames sources];
 var.ROIDATASETS = roidatasets;
 var.TR = all_tr;
+var.SLICETIMES = all_times;
 disp(var);
 
 NSUBJECTS=length(var.STRUCTURALS);
 
 FILTER=[0.01, 0.1];
 
+% These same steps are also available in CONN as defaultMNISScombined.mat
 STEPS={
     'functional_label_as_original',...
     'functional_realign&unwarp',...
+    'functional_slicetime',...
     'functional_art',...
     'functional_coregister_affine_noreslice',...
     'functional_label_as_subjectspace',...
@@ -180,6 +195,7 @@ batch.Setup.nsubjects=1;
 batch.Setup.RT=var.TR;
 batch.Setup.functionals=var.FUNCTIONALS;
 batch.Setup.structurals=var.STRUCTURALS;
+batch.Setup.analyses=1;
 
 % Prepopulate secondary datasets so we can refer to subject-space in ROIs
 batch.Setup.secondarydatasets{1}=struct('functionals_type', 2, 'functionals_label', 'unsmoothed volumes');
@@ -208,6 +224,8 @@ batch.Setup.conditions.durations=var.DURATIONS;
 batch.Setup.outputfiles=[0,1,0,0,0,0];
 
 batch.Setup.preprocessing.steps=STEPS;
+batch.Setup.preprocessing.sliceorder=var.SLICETIMES;
+
 batch.Setup.done=1;
 batch.Setup.overwrite='Yes';                            
 
@@ -215,11 +233,12 @@ batch.Denoising.filter=FILTER;
 batch.Denoising.done=1;
 batch.Denoising.overwrite='Yes';
 
-% 1st-Level Analysis for Seed to Voxel and/or ROI-to-ROI on same sources
+% 1st-Level Analysis for Seed to Voxel and ROI-to-ROI on same sources
 batch.Analysis.done=1;
 batch.Analysis.overwrite='Yes';
 batch.Analysis.sources=var.SOURCES;
 batch.Analysis.weight='none';
+batch.Analysis.type=3;
 
 disp('Running batch with CONN');
 conn_batch(batch);
