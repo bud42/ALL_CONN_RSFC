@@ -45,6 +45,8 @@ disp(sources);
 % Assign filenames/conditions
 anats = {};
 fmris = {};
+atlasfiles = {};
+atlasnames = {};
 roifiles = {};
 roidatasets = {};
 conditions = {};
