@@ -26,10 +26,8 @@ RUN unzip -q /opt/mcr_install/MATLAB_Runtime_R2022a_Update_7_glnxa64.zip \
 # Install CONN Standalone
 COPY conn22a_glnxa64.zip /opt/conn22a_glnxa64.zip
 RUN unzip -qj /opt/conn22a_glnxa64.zip -d /opt/conn && \
+    /opt/conn/run_conn.sh /opt/mcr/v912 batch exit && \
     rm -f /opt/conn22a_glnxa64.zip
-
-# Initialize CONN for Singularity purposes
-RUN /opt/conn/run_conn.sh /opt/mcr/v912 batch exit
 
 # Install our code
 COPY ROI /opt/ROI/
