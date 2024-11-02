@@ -1,16 +1,5 @@
 FROM containers.mathworks.com/matlab-runtime:r2022a
 
-
-#RUN apt-get update -qq && DEBIAN_FRONTEND=noninteractive \
-#    apt-get install -yq --no-install-recommends \
-#    openssh-client \
-#    apt-utils ca-certificates zip unzip xorg wget xvfb \
-#    bc libgomp1 libxmu6 libxt6 libstdc++6 tar \
-#    ghostscript libgs-dev \
-#    && apt-get clean \
-#    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
-#    && chmod 777 /opt && chmod a+s /opt
-
 ENV AGREE_TO_MATLAB_RUNTIME_LICENSE=yes
 
 # Install CONN Standalone
