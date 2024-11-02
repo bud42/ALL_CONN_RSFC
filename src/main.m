@@ -179,7 +179,7 @@ batch.parallel.cmd_submitoptions='-t 12:00:00 --mem=8G';
 batch.parallel.cmd_deletejob='ssh $USER@$HOSTNAME scancel JOBID';
 batch.parallel.cmd_checkstatus='ssh $USER@$HOSTNAME squeue --jobs=JOBID';
 batch.parallel.cmd_rundeployed=1;
-batch.parallel.cmd_deployedfile=['singularity exec ' CONTAINER ' /opt/conn/run_conn.sh /opt/mcr/v912'];
+batch.parallel.cmd_deployedfile=['singularity exec ' CONTAINER ' /opt/conn/run_conn.sh /opt/matlabruntime/v912'];
 batch.parallel.cmd_checkstatus_automatic=0;
 batch.parallel.cmd_submit_delay=1;
 
