@@ -197,7 +197,7 @@ batch.Setup.nsubjects=1;
 batch.Setup.RT=var.TR;
 batch.Setup.functionals=var.FUNCTIONALS;
 batch.Setup.structurals=var.STRUCTURALS;
-batch.Setup.analyses=1;
+batch.Setup.analyses=[1,2];  % R2R and S2V
 
 % Prepopulate secondary datasets so we can refer to subject-space in ROIs
 batch.Setup.secondarydatasets{1}=struct('functionals_type', 2, 'functionals_label', 'unsmoothed volumes');
@@ -240,7 +240,7 @@ batch.Analysis.done=1;
 batch.Analysis.overwrite='Yes';
 batch.Analysis.sources=var.SOURCES;
 batch.Analysis.weight='none';
-batch.Analysis.type=3;
+batch.Analysis.type=3;  % R2R and S2V
 
 disp('Running batch with CONN');
 conn_batch(batch);
