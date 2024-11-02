@@ -1,5 +1,7 @@
 FROM containers.mathworks.com/matlab-runtime:r2022a
 
+ENV AGREE_TO_MATLAB_RUNTIME_LICENSE=yes
+
 RUN apt-get update -qq && DEBIAN_FRONTEND=noninteractive \
     apt-get install -yq --no-install-recommends \
     openssh-client \
