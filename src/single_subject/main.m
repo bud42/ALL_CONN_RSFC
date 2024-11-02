@@ -96,8 +96,12 @@ for k=1:numel(sessions)
         if all_tr == 0.0
             all_tr = new_tr;
         elseif all_tr ~= new_tr
-            disp('Conflicting TR found');
-            exit;
+            if abs(all_tr - new_tr) > 0.01
+                disp('Conflicting TR found');
+                disp(all_tr);
+                disp(new_tr);
+                exit;
+            end
         end
 
         % Load slicetimes
