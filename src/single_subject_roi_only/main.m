@@ -45,6 +45,8 @@ disp(sources);
 % Assign filenames/conditions
 anats = {};
 fmris = {};
+atlasfiles = {};
+atlasnames = {};
 roifiles = {};
 roidatasets = {};
 conditions = {};
@@ -94,8 +96,12 @@ for k=1:numel(sessions)
         if all_tr == 0.0
             all_tr = new_tr;
         elseif all_tr ~= new_tr
-            disp('Conflicting TR found');
-            exit;
+            if abs(all_tr - new_tr) > 0.01
+                disp('Conflicting TR found');
+                disp(all_tr);
+                disp(new_tr);
+                exit;
+            end
         end
 
         % Load slicetimes
@@ -189,7 +195,7 @@ STEPS={
 clear batch;
 batch.filename=fullfile(var.ROOT, 'conn_project.mat');
 
-% Setup for ROI-to-ROI
+% Setup for ROI-to-ROI only
 batch.Setup.isnew=1;
 batch.Setup.nsubjects=1;
 batch.Setup.RT=var.TR;
