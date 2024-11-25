@@ -201,7 +201,7 @@ batch.Setup.nsubjects=1;
 batch.Setup.RT=var.TR;
 batch.Setup.functionals=var.FUNCTIONALS;
 batch.Setup.structurals=var.STRUCTURALS;
-batch.Setup.analyses=1;
+batch.Setup.analyses=[1];
 
 % Prepopulate secondary datasets so we can refer to subject-space in ROIs
 batch.Setup.secondarydatasets{1}=struct('functionals_type', 2, 'functionals_label', 'unsmoothed volumes');
