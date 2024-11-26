@@ -109,7 +109,6 @@ for k=1:numel(sessions)
         jsonfile = fullfile(nifti_dir, [nifti_base '.json']);
         jsondata = jsondecode(fileread(jsonfile));
         new_times = jsondata.SliceTiming;
-        disp(new_times);
         if isempty(all_times)
             all_times = new_times;
         elseif all_times ~= new_times
