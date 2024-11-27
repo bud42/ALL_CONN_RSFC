@@ -1,6 +1,20 @@
+% Run single subject in CONN toolbox through first-level ROI only
 CONTAINER = getenv("SINGULARITY_CONTAINER");
 BIND = getenv("SINGULARITY_BIND");
 ROOT = '/OUTPUTS';
+
+anats = {};
+fmris = {};
+atlasfiles = {};
+atlasnames = {};
+atlasdatasets = {};
+roifiles = {};
+roidatasets = {};
+conditions = {};
+onsets = {};
+durations = {};
+all_tr = 0.0;
+all_times = [];
 
 disp(pwd);
 disp(BIND);
@@ -40,20 +54,6 @@ else
     sources = {};
 end
 disp(sources);
-
-
-% Assign filenames/conditions
-anats = {};
-fmris = {};
-atlasfiles = {};
-atlasnames = {};
-roifiles = {};
-roidatasets = {};
-conditions = {};
-onsets = {};
-durations = {};
-all_tr = 0.0;
-all_times = [];
 
 % Get current subject
 n = 1;
@@ -150,6 +150,7 @@ end
 for i=1:numel(atlasnames)
     atlas = atlasnames{i};
     atlasfiles{i}{n} = fullfile(ROOT, [atlas '.nii']);
+    atlasdatasets{i} = 'unsmoothed volumes';
 end
 disp(atlasfiles);
 
@@ -162,8 +163,8 @@ var.ONSETS = onsets;
 var.DURATIONS = durations;
 var.ROINAMES = [roinames atlasnames];
 var.ROIFILES = [roifiles atlasfiles];
+var.ROIDATASETS = [roidatasets atlasdatasets];
 var.SOURCES = [roinames sources];
-var.ROIDATASETS = roidatasets;
 var.TR = all_tr;
 var.SLICETIMES = all_times;
 disp(var);
