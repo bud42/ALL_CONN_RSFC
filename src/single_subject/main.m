@@ -1,6 +1,20 @@
+% Run single subject in CONN toolbox through first-level S2V
 CONTAINER = getenv("SINGULARITY_CONTAINER");
 BIND = getenv("SINGULARITY_BIND");
 ROOT = '/OUTPUTS';
+
+anats = {};
+fmris = {};
+atlasfiles = {};
+atlasnames = {};
+atlasdatasets = {};
+roifiles = {};
+roidatasets = {};
+conditions = {};
+onsets = {};
+durations = {};
+all_tr = 0.0;
+all_times = [];
 
 disp(pwd);
 disp(BIND);
@@ -40,20 +54,6 @@ else
     sources = {};
 end
 disp(sources);
-
-
-% Assign filenames/conditions
-anats = {};
-fmris = {};
-atlasfiles = {};
-atlasnames = {};
-roifiles = {};
-roidatasets = {};
-conditions = {};
-onsets = {};
-durations = {};
-all_tr = 0.0;
-all_times = [];
 
 % Get current subject
 n = 1;
@@ -109,7 +109,6 @@ for k=1:numel(sessions)
         jsonfile = fullfile(nifti_dir, [nifti_base '.json']);
         jsondata = jsondecode(fileread(jsonfile));
         new_times = jsondata.SliceTiming;
-        disp(new_times);
         if isempty(all_times)
             all_times = new_times;
         elseif all_times ~= new_times
@@ -151,6 +150,7 @@ end
 for i=1:numel(atlasnames)
     atlas = atlasnames{i};
     atlasfiles{i}{n} = fullfile(ROOT, [atlas '.nii']);
+    atlasdatasets{i} = 'unsmoothed volumes';
 end
 disp(atlasfiles);
 
@@ -163,8 +163,8 @@ var.ONSETS = onsets;
 var.DURATIONS = durations;
 var.ROINAMES = [roinames atlasnames];
 var.ROIFILES = [roifiles atlasfiles];
+var.ROIDATASETS = [roidatasets atlasdatasets];
 var.SOURCES = [roinames sources];
-var.ROIDATASETS = roidatasets;
 var.TR = all_tr;
 var.SLICETIMES = all_times;
 disp(var);
@@ -208,7 +208,7 @@ batch.Setup.secondarydatasets{1}=struct('functionals_type', 2, 'functionals_labe
 batch.Setup.secondarydatasets{2}=struct('functionals_type', 4, 'functionals_label', 'original data');
 batch.Setup.secondarydatasets{3}=struct('functionals_type', 4, 'functionals_label', 'subject-space data');
 
-% Add  ROIs
+% Add ROIs
 batch.Setup.rois.add = 1;
 batch.Setup.rois.names=var.ROINAMES;
 batch.Setup.rois.files=var.ROIFILES;
@@ -229,12 +229,15 @@ batch.Setup.conditions.durations=var.DURATIONS;
 %   outputfiles(6): 1/0 creates ROI-extraction REX files
 batch.Setup.outputfiles=[0,1,0,0,0,0];
 
+% Configure preproc
 batch.Setup.preprocessing.steps=STEPS;
 batch.Setup.preprocessing.sliceorder=var.SLICETIMES;
 
+% Configure to run and overwrite any existing
 batch.Setup.done=1;
 batch.Setup.overwrite='Yes';                            
 
+% Configure denoising
 batch.Denoising.filter=FILTER;
 batch.Denoising.done=1;
 batch.Denoising.overwrite='Yes';
